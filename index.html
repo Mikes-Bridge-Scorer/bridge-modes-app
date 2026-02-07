@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta name="description" content="Bridge Modes Calculator - Chicago Bridge, Bonus Bridge, and Bonus Bridge Lite scoring calculator. Works offline!">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -116,13 +116,14 @@
         
         .btn {
             padding: 20px;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
             color: white;
+            min-height: 60px;
         }
         
         .btn:active {
@@ -249,12 +250,19 @@
             background: white;
             border-radius: 20px;
             padding: 30px;
-            max-width: 400px;
-            width: 100%;
+            max-width: 500px;
+            width: 95%;
             max-height: 85vh;
             overflow-y: auto;
             margin: auto;
             -webkit-overflow-scrolling: touch;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .popup h2 {
+            margin: 0 0 20px 0;
+            color: #2d3748;
+            font-size: 24px;
         }
         
         .popup h2 {
@@ -269,24 +277,27 @@
         
         .popup-field label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #495057;
             font-weight: bold;
+            font-size: 16px;
         }
         
         .popup-field input {
             width: 100%;
-            padding: 15px;
+            padding: 18px;
             border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 18px;
+            border-radius: 12px;
+            font-size: 20px;
             -webkit-appearance: none;
             appearance: none;
+            box-sizing: border-box;
         }
         
         .popup-field input:focus {
             outline: none;
             border-color: #667eea;
+            background: #f7fafc;
         }
         
         .popup-buttons {
@@ -297,12 +308,13 @@
         
         .popup-btn {
             flex: 1;
-            padding: 15px;
+            padding: 18px 20px;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
+            min-height: 56px;
         }
         
         .popup-btn.cancel {
@@ -365,20 +377,20 @@
             <h2>HCP Analysis</h2>
             <div class="popup-field">
                 <label>Declarer's HCP (0-37):</label>
-                <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpDeclarer" min="0" max="37" value="20">
+                <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpDeclarer" min="0" max="37" value="20" onfocus="this.select()">
             </div>
             <div id="distributionFields">
                 <div class="popup-field">
                     <label>Singletons (0-4):</label>
-                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpSingletons" min="0" max="4" value="0">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpSingletons" min="0" max="4" value="0" onfocus="this.select()">
                 </div>
                 <div class="popup-field">
                     <label>Voids (0-4):</label>
-                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpVoids" min="0" max="4" value="0">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpVoids" min="0" max="4" value="0" onfocus="this.select()">
                 </div>
                 <div class="popup-field">
                     <label>Long suits 6+ cards (0-4):</label>
-                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLongSuits" min="0" max="4" value="0">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLongSuits" min="0" max="4" value="0" onfocus="this.select()">
                 </div>
                 <div style="font-size: 12px; color: #6c757d; margin-top: -10px; font-style: italic;">
                     Distribution helps suit contracts but hurts NT contracts
@@ -400,12 +412,12 @@
             </div>
             <div class="popup-field">
                 <label>Declarer's HCP (0-37):</label>
-                <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLiteDeclarer" min="0" max="37" value="20">
+                <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLiteDeclarer" min="0" max="37" value="20" onfocus="this.select()">
             </div>
             <div id="trumpFields">
                 <div class="popup-field">
                     <label>Trump length (0-13):</label>
-                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLiteTrumps" min="0" max="13" value="8">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLiteTrumps" min="0" max="13" value="8" onfocus="this.select()">
                     <div style="font-size: 12px; color: #6c757d; margin-top: 5px; font-style: italic;">
                         For NT contracts, enter 0
                     </div>
