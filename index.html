@@ -23,19 +23,37 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
         }
         
         .container {
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
             width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            max-height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @media (min-width: 600px) {
+            .container {
+                height: auto;
+                max-height: 95vh;
+            }
         }
         
         .header {
@@ -237,7 +255,7 @@
             z-index: 1000;
             justify-content: center;
             align-items: flex-start;
-            padding: 20px;
+            padding: 10px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -252,17 +270,22 @@
             padding: 30px;
             max-width: 500px;
             width: 95%;
-            max-height: 85vh;
-            overflow-y: auto;
-            margin: auto;
+            max-height: none;
+            margin: auto 0;
             -webkit-overflow-scrolling: touch;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            position: relative;
         }
         
-        .popup h2 {
-            margin: 0 0 20px 0;
-            color: #2d3748;
-            font-size: 24px;
+        @media (max-height: 600px) {
+            .popup {
+                padding: 20px;
+                margin: 10px 0;
+            }
+            
+            .popup-field {
+                margin-bottom: 15px;
+            }
         }
         
         .popup h2 {
@@ -835,11 +858,15 @@
                 
                 document.getElementById('hcpPopup').classList.add('active');
                 
-                // Scroll popup to top and focus first field
+                // Scroll to top and focus first field
                 setTimeout(() => {
-                    const popup = document.querySelector('#hcpPopup .popup');
-                    if (popup) popup.scrollTop = 0;
-                    document.getElementById('hcpDeclarer').focus();
+                    const overlay = document.getElementById('hcpPopup');
+                    const firstInput = document.getElementById('hcpDeclarer');
+                    overlay.scrollTop = 0;
+                    firstInput.focus();
+                    
+                    // Add scroll listener for keyboard
+                    this.addInputScrollListeners('hcpPopup');
                 }, 100);
             }
             
@@ -850,12 +877,34 @@
                 
                 document.getElementById('hcpLitePopup').classList.add('active');
                 
-                // Scroll popup to top and focus first field
+                // Scroll to top and focus first field
                 setTimeout(() => {
-                    const popup = document.querySelector('#hcpLitePopup .popup');
-                    if (popup) popup.scrollTop = 0;
-                    document.getElementById('hcpLiteDeclarer').focus();
+                    const overlay = document.getElementById('hcpLitePopup');
+                    const firstInput = document.getElementById('hcpLiteDeclarer');
+                    overlay.scrollTop = 0;
+                    firstInput.focus();
+                    
+                    // Add scroll listener for keyboard
+                    this.addInputScrollListeners('hcpLitePopup');
                 }, 100);
+            }
+            
+            addInputScrollListeners(popupId) {
+                // Add focus listeners to all inputs in this popup to scroll them into view
+                const popup = document.getElementById(popupId);
+                const inputs = popup.querySelectorAll('input');
+                
+                inputs.forEach(input => {
+                    input.addEventListener('focus', () => {
+                        setTimeout(() => {
+                            input.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'center',
+                                inline: 'nearest'
+                            });
+                        }, 300); // Delay to allow keyboard to appear
+                    });
+                });
             }
             
             cancelHCPAnalysis() {
