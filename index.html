@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Bridge Modes Calculator - Chicago Bridge, Bonus Bridge, and Bonus Bridge Lite scoring calculator. Works offline!">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bridge Modes">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="manifest" href="manifest.json">
+    <title>Bridge Modes Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .score-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .display-panel {
+            padding: 30px 20px;
+            min-height: 200px;
+            text-align: center;
+            background: #f8f9fa;
+        }
+        
+        .display-panel .contract-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #495057;
+            margin: 20px 0;
+            min-height: 60px;
+            letter-spacing: 2px;
+        }
+        
+        .display-panel .prompt {
+            font-size: 18px;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        
+        .display-panel .info {
+            font-size: 14px;
+            color: #868e96;
+            margin-top: 10px;
+        }
+        
+        .button-grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-suit {
+            background: #495057;
+            font-size: 32px;
+        }
+        
+        .btn-suit.clubs { color: #28a745; }
+        .btn-suit.diamonds { color: #dc3545; }
+        .btn-suit.hearts { color: #dc3545; }
+        .btn-suit.spades { color: #ffffff; }
+        
+        .btn-action {
+            background: #28a745;
+            grid-column: span 2;
+        }
+        
+        .btn-action.secondary {
+            background: #6c757d;
+        }
+        
+        .btn-action.primary {
+            background: #007bff;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .mode-selection {
+            padding: 40px 20px;
+        }
+        
+        .mode-btn {
+            width: 100%;
+            padding: 30px;
+            margin: 15px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mode-btn:active {
+            transform: translateY(-2px);
+        }
+        
+        .deal-info {
+            background: #e9ecef;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 6px;
+            padding: 12px;
+            background: #f8f9fa;
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 10px 4px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .control-btn.active {
+            background: #28a745;
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* HCP Analysis Popup */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .popup-overlay.active {
+            display: flex;
+        }
+        
+        .popup {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .popup h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .popup-field {
+            margin-bottom: 20px;
+        }
+        
+        .popup-field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: bold;
+        }
+        
+        .popup-field input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .popup-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .popup-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .popup-btn.cancel {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .popup-btn.submit {
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bridge Modes</h1>
+            <div class="subtitle">Simple Scoring Calculator</div>
+        </div>
+        
+        <div id="scores" class="scores" style="display: none;">
+            <div class="score-item">
+                <div class="score-label">NS</div>
+                <div class="score-value" id="scoreNS">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">EW</div>
+                <div class="score-value" id="scoreEW">0</div>
+            </div>
+        </div>
+        
+        <div id="dealInfo" class="deal-info" style="display: none;"></div>
+        
+        <div id="displayPanel" class="display-panel">
+            <div class="mode-selection">
+                <button class="mode-btn" onclick="app.selectMode('chicago')">
+                    Chicago Bridge
+                </button>
+                <button class="mode-btn" onclick="app.selectMode('bonus')">
+                    Bonus Bridge
+                </button>
+            </div>
+        </div>
+        
+        <div id="buttonGrid" class="button-grid" style="display: none;">
+        </div>
+        
+        <div id="controlButtons" class="control-buttons" style="display: none;">
+            <button class="control-btn" onclick="app.back()">Back</button>
+            <button class="control-btn" onclick="app.showHelp(app.mode)">Help</button>
+            <button class="control-btn" id="wakeBtn" onclick="app.toggleWakeLock()">Wake 🔒</button>
+            <button class="control-btn" onclick="app.newGame()">New</button>
+            <button class="control-btn" onclick="app.showHistory()">History</button>
+        </div>
+    </div>
+    
+    <!-- HCP Analysis Popup for Bonus Bridge -->
+    <div id="hcpPopup" class="popup-overlay">
+        <div class="popup">
+            <h2>HCP Analysis</h2>
+            <div class="popup-field">
+                <label>Declarer's HCP (0-37):</label>
+                <input type="number" id="hcpDeclarer" min="0" max="37" value="20">
+            </div>
+            <div id="distributionFields">
+                <div class="popup-field">
+                    <label>Singletons (0-4):</label>
+                    <input type="number" id="hcpSingletons" min="0" max="4" value="0">
+                </div>
+                <div class="popup-field">
+                    <label>Voids (0-4):</label>
+                    <input type="number" id="hcpVoids" min="0" max="4" value="0">
+                </div>
+                <div class="popup-field">
+                    <label>Long suits 6+ cards (0-4):</label>
+                    <input type="number" id="hcpLongSuits" min="0" max="4" value="0">
+                </div>
+                <div style="font-size: 12px; color: #6c757d; margin-top: -10px; font-style: italic;">
+                    Distribution helps suit contracts but hurts NT contracts
+                </div>
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn cancel" onclick="app.cancelHCPAnalysis()">Cancel</button>
+                <button class="popup-btn submit" onclick="app.submitHCPAnalysis()">Calculate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Popup -->
+    <div id="helpPopup" class="popup-overlay">
+        <div class="popup" style="max-width: 600px;">
+            <h2 id="helpTitle">Bridge Modes Help</h2>
+            <div id="helpContent" style="max-height: 60vh; overflow-y: auto; line-height: 1.6; color: #495057;">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn submit" onclick="app.closeHelp()" style="width: 100%;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bridge Modes Calculator - Simple Version
+        class BridgeModesApp {
+            constructor() {
+                this.mode = null; // 'chicago' or 'bonus'
+                this.screen = 'mode_selection'; // Current screen
+                this.scores = { NS: 0, EW: 0 };
+                this.deal = 1;
+                this.vulnerability = 'NV';
+                this.dealer = 0; // 0=N, 1=E, 2=S, 3=W
+                
+                // Current contract being built
+                this.contract = {
+                    level: null,
+                    suit: null,
+                    declarer: null,
+                    doubled: '',
+                    result: null,
+                    tricks: null
+                };
+                
+                this.history = [];
+                
+                // Wake Lock for keeping screen on
+                this.wakeLock = null;
+                this.wakeLockSupported = 'wakeLock' in navigator;
+                
+                this.init();
+            }
+            
+            init() {
+                this.updateDisplay();
+            }
+            
+            selectMode(mode) {
+                this.mode = mode;
+                this.screen = 'level';
+                this.resetContract();
+                this.updateDealInfo();
+                document.getElementById('scores').style.display = 'flex';
+                document.getElementById('dealInfo').style.display = 'block';
+                document.getElementById('controlButtons').style.display = 'flex';
+                this.updateDisplay();
+            }
+            
+            resetContract() {
+                this.contract = {
+                    level: null,
+                    suit: null,
+                    declarer: null,
+                    doubled: '',
+                    result: null,
+                    tricks: null
+                };
+            }
+            
+            updateDealInfo() {
+                // Update vulnerability and dealer based on deal number
+                const vulnCycle = ['NV', 'NS', 'EW', 'Both'];
+                this.vulnerability = vulnCycle[(this.deal - 1) % 4];
+                this.dealer = (this.deal - 1) % 4;
+                
+                const dealers = ['North', 'East', 'South', 'West'];
+                const dealerName = dealers[this.dealer];
+                
+                const modeNames = {
+                    'chicago': 'Chicago Bridge',
+                    'bonus': 'Bonus Bridge',
+                    'bonus-lite': 'Bonus Bridge Lite'
+                };
+                
+                document.getElementById('dealInfo').textContent = 
+                    `${modeNames[this.mode]} - Deal ${this.deal} - Dealer: ${dealerName} - Vulnerability: ${this.vulnerability}`;
+            }
+            
+            updateDisplay() {
+                // Update scores
+                document.getElementById('scoreNS').textContent = this.scores.NS;
+                document.getElementById('scoreEW').textContent = this.scores.EW;
+                
+                const panel = document.getElementById('displayPanel');
+                const grid = document.getElementById('buttonGrid');
+                
+                switch (this.screen) {
+                    case 'mode_selection':
+                        this.showModeSelection();
+                        break;
+                    case 'level':
+                        this.showLevelSelection();
+                        break;
+                    case 'suit':
+                        this.showSuitSelection();
+                        break;
+                    case 'declarer':
+                        this.showDeclarerSelection();
+                        break;
+                    case 'result':
+                        this.showResultSelection();
+                        break;
+                    case 'tricks':
+                        this.showTricksSelection();
+                        break;
+                    case 'score':
+                        this.showScore();
+                        break;
+                }
+            }
+            
+            showModeSelection() {
+                const panel = document.getElementById('displayPanel');
+                panel.innerHTML = `
+                    <div class="mode-selection">
+                        <div style="position: relative;">
+                            <button class="mode-btn" onclick="app.selectMode('chicago')">
+                                Chicago Bridge
+                            </button>
+                            <button onclick="app.showHelp('chicago')" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.3); border: none; border-radius: 50%; width: 30px; height: 30px; color: white; cursor: pointer; font-weight: bold;">?</button>
+                        </div>
+                        <div style="position: relative;">
+                            <button class="mode-btn" onclick="app.selectMode('bonus')">
+                                Bonus Bridge
+                            </button>
+                            <button onclick="app.showHelp('bonus')" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.3); border: none; border-radius: 50%; width: 30px; height: 30px; color: white; cursor: pointer; font-weight: bold;">?</button>
+                        </div>
+                        <div style="position: relative;">
+                            <button class="mode-btn" onclick="app.selectMode('bonus-lite')" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                Bonus Bridge Lite
+                            </button>
+                            <button onclick="app.showHelp('bonus-lite')" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.3); border: none; border-radius: 50%; width: 30px; height: 30px; color: white; cursor: pointer; font-weight: bold;">?</button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('buttonGrid').style.display = 'none';
+            }
+            
+            showLevelSelection() {
+                const panel = document.getElementById('displayPanel');
+                panel.innerHTML = `
+                    <div class="prompt">Select Contract Level</div>
+                    <div class="contract-display">${this.getContractDisplay()}</div>
+                    <div class="info">Choose level 1-7</div>
+                `;
+                
+                const grid = document.getElementById('buttonGrid');
+                grid.style.display = 'grid';
+                grid.innerHTML = `
+                    ${[1,2,3,4,5,6,7].map(n => 
+                        `<button class="btn btn-number" onclick="app.selectLevel(${n})">${n}</button>`
+                    ).join('')}
+                `;
+            }
+            
+            showSuitSelection() {
+                const panel = document.getElementById('displayPanel');
+                panel.innerHTML = `
+                    <div class="prompt">Select Suit</div>
+                    <div class="contract-display">${this.getContractDisplay()}</div>
+                    <div class="info">All data must be entered to continue</div>
+                `;
+                
+                const grid = document.getElementById('buttonGrid');
+                grid.innerHTML = `
+                    <button class="btn btn-suit clubs" onclick="app.selectSuit('♣')">♣</button>
+                    <button class="btn btn-suit diamonds" onclick="app.selectSuit('♦')">♦</button>
+                    <button class="btn btn-suit hearts" onclick="app.selectSuit('♥')">♥</button>
+                    <button class="btn btn-suit spades" onclick="app.selectSuit('♠')">♠</button>
+                    <button class="btn btn-suit" onclick="app.selectSuit('NT')">NT</button>
+                `;
+            }
+            
+            showDeclarerSelection() {
+                const panel = document.getElementById('displayPanel');
+                const doubleStatus = !this.contract.doubled ? 'Undoubled' : 
+                                    this.contract.doubled === 'X' ? 'Doubled (X)' : 
+                                    'Redoubled (XX)';
+                
+                panel.innerHTML = `
+                    <div class="prompt">Select Declarer & Doubling</div>
+                    <div class="contract-display">${this.getContractDisplay()}</div>
+                    <div class="info">Current: ${doubleStatus}<br>Click X/XX to toggle doubling</div>
+                `;
+                
+                const grid = document.getElementById('buttonGrid');
+                const doubleBtn = !this.contract.doubled ? 'Double (X)' : 
+                                  this.contract.doubled === 'X' ? 'Redouble (XX)' : 
+                                  'Clear';
+                
+                grid.innerHTML = `
+                    <button class="btn btn-number" onclick="app.selectDeclarer('N')">N</button>
+                    <button class="btn btn-number" onclick="app.selectDeclarer('E')">E</button>
+                    <button class="btn btn-number" onclick="app.selectDeclarer('S')">S</button>
+                    <button class="btn btn-number" onclick="app.selectDeclarer('W')">W</button>
+                    <button class="btn btn-action secondary" onclick="app.toggleDouble()" style="grid-column: span 1; font-size: 14px; padding: 10px;">${doubleBtn}</button>
+                `;
+            }
+            
+            showResultSelection() {
+                const panel = document.getElementById('displayPanel');
+                panel.innerHTML = `
+                    <div class="prompt">Enter Result</div>
+                    <div class="contract-display">${this.getContractDisplay()}</div>
+                    <div class="info">Made, Plus overtricks, or Down?</div>
+                `;
+                
+                const grid = document.getElementById('buttonGrid');
+                grid.innerHTML = `
+                    <button class="btn btn-action" onclick="app.selectResult('made')">Made</button>
+                    <button class="btn btn-action" onclick="app.selectResult('plus')">Plus</button>
+                    <button class="btn btn-action secondary" onclick="app.selectResult('down')">Down</button>
+                `;
+            }
+            
+            showTricksSelection() {
+                const panel = document.getElementById('displayPanel');
+                const level = this.contract.level;
+                
+                let label, max;
+                if (this.contract.result === 'down') {
+                    label = 'Select Tricks Down';
+                    max = 6 + level; // Can go down at most to 0 tricks
+                } else {
+                    label = 'Select Overtricks';
+                    max = 13 - (6 + level); // Can make at most 13 tricks total
+                }
+                
+                panel.innerHTML = `
+                    <div class="prompt">${label}</div>
+                    <div class="contract-display">${this.getContractDisplay()}</div>
+                    <div class="info">Maximum ${max} ${this.contract.result === 'down' ? 'down' : 'overtricks'}</div>
+                `;
+                
+                const grid = document.getElementById('buttonGrid');
+                const buttons = [];
+                for (let i = 1; i <= Math.min(max, 7); i++) {
+                    buttons.push(`<button class="btn btn-number" onclick="app.selectTricks(${i})">${i}</button>`);
+                }
+                grid.innerHTML = buttons.join('');
+            }
+            
+            showScore() {
+                const lastDeal = this.history[this.history.length - 1];
+                const panel = document.getElementById('displayPanel');
+                
+                let scoreDetails = '';
+                if (this.mode === 'bonus' || this.mode === 'bonus-lite') {
+                    const modeLabel = this.mode === 'bonus-lite' ? 'Lite' : 'Full';
+                    scoreDetails = `
+                        <div class="info" style="font-size: 16px; color: #6c757d; margin-top: 10px;">
+                            Raw Score: ${lastDeal.rawScore > 0 ? '+' : ''}${lastDeal.rawScore}
+                        </div>
+                        <div class="info" style="font-size: 14px; color: #868e96; margin-top: 5px;">
+                            Bonus Bridge ${modeLabel}
+                        </div>
+                        <div class="info" style="font-size: 24px; color: #28a745; font-weight: bold; margin-top: 10px;">
+                            ${lastDeal.scoringInfo}
+                        </div>
+                    `;
+                } else {
+                    scoreDetails = `
+                        <div class="info" style="font-size: 24px; color: #28a745; font-weight: bold; margin-top: 20px;">
+                            ${lastDeal.scoringInfo}
+                        </div>
+                    `;
+                }
+                
+                panel.innerHTML = `
+                    <div class="prompt">Deal ${lastDeal.deal} Complete</div>
+                    <div class="contract-display">${lastDeal.contractDisplay}</div>
+                    ${scoreDetails}
+                `;
+                
+                const grid = document.getElementById('buttonGrid');
+                grid.innerHTML = `
+                    <button class="btn btn-action primary" onclick="app.nextDeal()" style="grid-column: span 5;">
+                        Next Deal
+                    </button>
+                `;
+            }
+            
+            getContractDisplay() {
+                let display = '';
+                if (this.contract.level) display += this.contract.level;
+                if (this.contract.suit) display += this.contract.suit;
+                if (this.contract.doubled === 'X') display += ' X';
+                if (this.contract.doubled === 'XX') display += ' XX';
+                if (this.contract.declarer) display += ' by ' + this.contract.declarer;
+                if (this.contract.result) {
+                    if (this.contract.result === 'made') {
+                        display += ' =';
+                    } else if (this.contract.result === 'plus') {
+                        display += this.contract.tricks ? ` +${this.contract.tricks}` : ' +';
+                    } else if (this.contract.result === 'down') {
+                        display += this.contract.tricks ? ` -${this.contract.tricks}` : ' -';
+                    }
+                }
+                return display || '&nbsp;';
+            }
+            
+            selectLevel(level) {
+                this.contract.level = level;
+                this.screen = 'suit';
+                this.updateDisplay();
+            }
+            
+            selectSuit(suit) {
+                this.contract.suit = suit;
+                this.screen = 'declarer';
+                this.updateDisplay();
+            }
+            
+            selectDeclarer(declarer) {
+                this.contract.declarer = declarer;
+                this.screen = 'result';
+                this.updateDisplay();
+            }
+            
+            toggleDouble() {
+                if (!this.contract.doubled) {
+                    this.contract.doubled = 'X';
+                } else if (this.contract.doubled === 'X') {
+                    this.contract.doubled = 'XX';
+                } else {
+                    this.contract.doubled = '';
+                }
+                this.updateDisplay();
+            }
+            
+            selectResult(result) {
+                this.contract.result = result;
+                if (result === 'made') {
+                    this.contract.tricks = 0;
+                    this.calculateScore();
+                } else {
+                    this.screen = 'tricks';
+                    this.updateDisplay();
+                }
+            }
+            
+            selectTricks(tricks) {
+                // Validate trick count
+                const level = this.contract.level;
+                const maxTricks = 13 - (6 + level); // Maximum possible overtricks
+                const maxDown = 6 + level; // Maximum possible undertricks
+                
+                if (this.contract.result === 'plus' && tricks > maxTricks) {
+                    alert(`Invalid: ${level}-level contract can only have maximum ${maxTricks} overtricks (13 total tricks possible)`);
+                    return;
+                }
+                
+                if (this.contract.result === 'down' && tricks > maxDown) {
+                    alert(`Invalid: ${level}-level contract can only go down maximum ${maxDown} tricks`);
+                    return;
+                }
+                
+                this.contract.tricks = tricks;
+                this.calculateScore();
+            }
+            
+            calculateScore() {
+                if (this.mode === 'bonus' || this.mode === 'bonus-lite') {
+                    // For Bonus Bridge modes, show HCP popup first
+                    this.showHCPPopup();
+                } else {
+                    // For Chicago, calculate directly
+                    this.finishScoring();
+                }
+            }
+            
+            showHCPPopup() {
+                const isNT = this.contract.suit === 'NT';
+                
+                // Reset all fields to defaults
+                document.getElementById('hcpDeclarer').value = 20;
+                document.getElementById('hcpSingletons').value = 0;
+                document.getElementById('hcpVoids').value = 0;
+                document.getElementById('hcpLongSuits').value = 0;
+                
+                // Hide distribution fields for NT contracts
+                const distFields = document.getElementById('distributionFields');
+                if (isNT) {
+                    distFields.style.display = 'none';
+                } else {
+                    distFields.style.display = 'block';
+                }
+                
+                document.getElementById('hcpPopup').classList.add('active');
+                document.getElementById('hcpDeclarer').focus();
+            }
+            
+            cancelHCPAnalysis() {
+                document.getElementById('hcpPopup').classList.remove('active');
+                this.screen = 'result';
+                this.contract.result = null;
+                this.contract.tricks = null;
+                this.updateDisplay();
+            }
+            
+            submitHCPAnalysis() {
+                const declarer = parseInt(document.getElementById('hcpDeclarer').value) || 20;
+                const isNT = this.contract.suit === 'NT';
+                
+                // For NT contracts, distribution is always 0 (or negative impact)
+                const singletons = isNT ? 0 : (parseInt(document.getElementById('hcpSingletons').value) || 0);
+                const voids = isNT ? 0 : (parseInt(document.getElementById('hcpVoids').value) || 0);
+                const longSuits = isNT ? 0 : (parseInt(document.getElementById('hcpLongSuits').value) || 0);
+                
+                document.getElementById('hcpPopup').classList.remove('active');
+                
+                this.contract.hcpAnalysis = {
+                    declarer,
+                    singletons,
+                    voids,
+                    longSuits
+                };
+                
+                this.finishScoring();
+            }
+            
+            finishScoring() {
+                // Calculate raw score
+                const rawScore = this.calculateRawScore();
+                
+                let nsScore = 0;
+                let ewScore = 0;
+                let scoringInfo = '';
+                
+                if (this.mode === 'bonus') {
+                    // Apply Bonus Bridge full HCP analysis
+                    const bonusCalc = this.calculateBonusScore(rawScore);
+                    nsScore = bonusCalc.nsPoints;
+                    ewScore = bonusCalc.ewPoints;
+                    scoringInfo = `NS: +${nsScore} | EW: +${ewScore}`;
+                } else if (this.mode === 'bonus-lite') {
+                    // Apply Bonus Bridge Lite simplified analysis
+                    const bonusCalc = this.calculateBonusLiteScore(rawScore);
+                    nsScore = bonusCalc.nsPoints;
+                    ewScore = bonusCalc.ewPoints;
+                    scoringInfo = `NS: +${nsScore} | EW: +${ewScore}`;
+                } else {
+                    // Chicago - simple score
+                    const side = (this.contract.declarer === 'N' || this.contract.declarer === 'S') ? 'NS' : 'EW';
+                    if (side === 'NS') {
+                        nsScore = rawScore;
+                    } else {
+                        ewScore = rawScore;
+                    }
+                    scoringInfo = `${side}: ${rawScore > 0 ? '+' : ''}${rawScore}`;
+                }
+                
+                this.scores.NS += nsScore;
+                this.scores.EW += ewScore;
+                
+                // Save to history
+                this.history.push({
+                    deal: this.deal,
+                    contract: {...this.contract},
+                    contractDisplay: this.getContractDisplay(),
+                    vulnerability: this.vulnerability,
+                    dealer: this.dealer,
+                    rawScore: rawScore,
+                    nsScore: nsScore,
+                    ewScore: ewScore,
+                    scoringInfo: scoringInfo
+                });
+                
+                this.screen = 'score';
+                this.updateDisplay();
+            }
+            
+            calculateRawScore() {
+                const level = this.contract.level;
+                const suit = this.contract.suit;
+                const doubled = this.contract.doubled;
+                const declarer = this.contract.declarer;
+                const result = this.contract.result;
+                const tricks = this.contract.tricks;
+                
+                const isVulnerable = this.isDeclarerVulnerable(declarer);
+                const isMajor = (suit === '♥' || suit === '♠');
+                const isNoTrump = (suit === 'NT');
+                
+                if (result === 'down') {
+                    // Contract failed
+                    return this.calculatePenalty(tricks, doubled, isVulnerable);
+                }
+                
+                // Contract made
+                let score = 0;
+                
+                // Base trick points
+                let trickValue = 0;
+                if (isNoTrump) {
+                    trickValue = 30 * level + 10; // First trick 40, rest 30
+                } else if (isMajor) {
+                    trickValue = 30 * level;
+                } else {
+                    trickValue = 20 * level;
+                }
+                
+                // Apply doubling
+                if (doubled === 'X') trickValue *= 2;
+                if (doubled === 'XX') trickValue *= 4;
+                
+                score += trickValue;
+                
+                // Overtrick points
+                if (result === 'plus') {
+                    let overtrickValue = 0;
+                    if (doubled) {
+                        overtrickValue = isVulnerable ? 200 : 100;
+                        if (doubled === 'XX') overtrickValue *= 2;
+                        overtrickValue *= tricks;
+                    } else {
+                        if (isNoTrump || isMajor) {
+                            overtrickValue = 30 * tricks;
+                        } else {
+                            overtrickValue = 20 * tricks;
+                        }
+                    }
+                    score += overtrickValue;
+                }
+                
+                // Game bonus
+                if (trickValue >= 100) {
+                    score += isVulnerable ? 500 : 300;
+                } else {
+                    score += 50; // Part score
+                }
+                
+                // Slam bonuses
+                if (level === 6) {
+                    score += isVulnerable ? 750 : 500;
+                } else if (level === 7) {
+                    score += isVulnerable ? 1500 : 1000;
+                }
+                
+                // Double/redouble bonus
+                if (doubled === 'X') score += 50;
+                if (doubled === 'XX') score += 100;
+                
+                return score;
+            }
+            
+            calculatePenalty(down, doubled, vulnerable) {
+                let penalty = 0;
+                
+                if (!doubled) {
+                    penalty = down * (vulnerable ? 100 : 50);
+                } else if (doubled === 'X') {
+                    for (let i = 1; i <= down; i++) {
+                        if (i === 1) {
+                            penalty += vulnerable ? 200 : 100;
+                        } else if (i <= 3) {
+                            penalty += vulnerable ? 300 : 200;
+                        } else {
+                            penalty += 300;
+                        }
+                    }
+                } else if (doubled === 'XX') {
+                    for (let i = 1; i <= down; i++) {
+                        if (i === 1) {
+                            penalty += vulnerable ? 400 : 200;
+                        } else if (i <= 3) {
+                            penalty += vulnerable ? 600 : 400;
+                        } else {
+                            penalty += 600;
+                        }
+                    }
+                }
+                
+                return -penalty;
+            }
+            
+            calculateBonusScore(rawScore) {
+                const hcp = this.contract.hcpAnalysis;
+                const level = this.contract.level;
+                const suit = this.contract.suit;
+                const result = this.contract.result;
+                const tricks = this.contract.tricks || 0;
+                const declarer = this.contract.declarer;
+                
+                const declarerHCP = hcp.declarer;
+                const defenderHCP = 40 - declarerHCP;
+                const totalHCP = 40;
+                
+                // Distribution points - for NT, voids/singletons are BAD
+                const isNT = suit === 'NT';
+                let distributionPoints;
+                if (isNT) {
+                    // NT: Voids and singletons are negative (bad), long suits still help
+                    distributionPoints = hcp.longSuits - (hcp.singletons * 2) - (hcp.voids * 3);
+                } else {
+                    // Suit: Traditional distribution points (all positive)
+                    distributionPoints = hcp.singletons * 2 + hcp.voids * 3 + hcp.longSuits;
+                }
+                
+                // Actual tricks taken
+                const actualTricks = result === 'down' ? 
+                    (6 + level - tricks) : 
+                    (6 + level + tricks);
+                
+                const isMajor = (suit === '♥' || suit === '♠');
+                const isGame = (level === 3 && isNT) || (level === 4 && isMajor) || 
+                               (level === 5 && !isMajor && !isNT) || level >= 6;
+                const isSlam = level >= 6;
+                const isGrandSlam = level === 7;
+                
+                let nsPoints = 0;
+                let ewPoints = 0;
+                const declarerSide = (declarer === 'N' || declarer === 'S') ? 'NS' : 'EW';
+                
+                // DEFEATED CONTRACTS
+                if (rawScore < 0) {
+                    // Determine divisor based on contract type (tiered system)
+                    let divisor;
+                    const absRaw = Math.abs(rawScore);
+                    if (absRaw < 150) divisor = 10;       // Part score penalties
+                    else if (absRaw < 850) divisor = 15;  // Game penalties
+                    else if (absRaw < 1600) divisor = 20; // Small slam penalties
+                    else divisor = 25;                     // Grand slam penalties
+                    
+                    // Step 1: Base Penalty
+                    let defenderPoints = absRaw / divisor;
+                    
+                    // Step 2: Contract Level Penalties
+                    if (isGame && !isSlam) defenderPoints += 3;
+                    if (isSlam && !isGrandSlam) defenderPoints += 5;
+                    if (isGrandSlam) defenderPoints += 7;
+                    
+                    // Step 3: Defender Performance Bonus
+                    const declarerHCPPercent = (declarerHCP / totalHCP) * 100;
+                    if (declarerHCPPercent > 60) {
+                        defenderPoints += (declarerHCPPercent - 50) / 5;
+                    }
+                    if (tricks >= 2) defenderPoints += 2;
+                    if (tricks >= 3) defenderPoints += 1; // Total +3 for 3+ down
+                    
+                    // Step 4: Declarer Consolation (optional)
+                    let declarerPoints = 0;
+                    if (declarerHCPPercent < 40) {
+                        declarerPoints = (50 - declarerHCPPercent) / 10;
+                    }
+                    
+                    // Minimum defender score
+                    defenderPoints = Math.max(3, Math.round(defenderPoints));
+                    declarerPoints = Math.round(declarerPoints);
+                    
+                    if (declarerSide === 'NS') {
+                        nsPoints = declarerPoints;
+                        ewPoints = defenderPoints;
+                    } else {
+                        ewPoints = declarerPoints;
+                        nsPoints = defenderPoints;
+                    }
+                    
+                    return { nsPoints, ewPoints };
+                }
+                
+                // MADE CONTRACTS - TIERED DIVISOR SYSTEM
+                // Determine divisor based on raw score (contract type)
+                let divisor;
+                if (rawScore < 150) {
+                    divisor = 10;  // Part scores - BOOST value
+                } else if (rawScore < 850) {
+                    divisor = 15;  // Games - STANDARD value
+                } else if (rawScore < 1600) {
+                    divisor = 20;  // Small slams - REDUCE dominance
+                } else {
+                    divisor = 25;  // Grand slams - MAJOR reduction
+                }
+                
+                // Step 1: Initial Points (tiered)
+                let points = rawScore / divisor;
+                
+                // Step 2-3: HCP Adjustment
+                const expectedHCP = this.getExpectedHCP(level, suit);
+                const hcpAdjustment = (declarerHCP - expectedHCP) * 0.75;
+                points -= hcpAdjustment;
+                
+                // Step 4: Expected Tricks
+                const contractExpectedTricks = 6 + level;
+                const handExpectedTricks = Math.min(13, 6 + Math.floor(declarerHCP / 3) + Math.floor(distributionPoints / 4));
+                
+                // Step 5: Performance Assessment
+                const contractPerformance = actualTricks - contractExpectedTricks;
+                if (contractPerformance > 0) {
+                    points += contractPerformance * 1.5;
+                }
+                
+                // Hand potential performance (only if underperformed hand potential)
+                if (handExpectedTricks > contractExpectedTricks && actualTricks < handExpectedTricks) {
+                    const potentialVariance = actualTricks - handExpectedTricks;
+                    points += potentialVariance * 0.75; // This is negative, so it subtracts
+                }
+                
+                // Step 6: Contract Type Adjustments
+                if (isGame) points += 2;
+                if (isSlam && !isGrandSlam) points += 4;
+                if (isGrandSlam) points += 6;
+                if (isNT) points += 1;
+                if (contractPerformance >= 4) points += 1;
+                if (contractPerformance >= 7) points += 1; // Total +2 for 7+ overtricks
+                
+                // Step 7: Distribution Adjustment (Suit Contracts Only)
+                if (!isNT) {
+                    const absDistPoints = Math.abs(distributionPoints);
+                    if (absDistPoints >= 3 && absDistPoints <= 4) points -= 1;
+                    else if (absDistPoints >= 5 && absDistPoints <= 6) points -= 2;
+                    else if (absDistPoints >= 7) points -= 3;
+                }
+                
+                // Step 8: Defender Reward - IMPROVED WITH BASELINE
+                let defenderPoints = 0;
+                const contractMade = actualTricks >= contractExpectedTricks;
+                
+                if (contractMade) {
+                    // BASELINE REWARD: Always give defenders 1-2 points for made contracts
+                    defenderPoints = 1;
+                    
+                    // Additional reward if declarer underperformed hand potential
+                    if (handExpectedTricks > contractExpectedTricks && actualTricks < handExpectedTricks) {
+                        defenderPoints += (handExpectedTricks - actualTricks) * 2;
+                        
+                        // Extra reward for defending at disadvantage
+                        const declarerHCPPercent = (declarerHCP / totalHCP) * 100;
+                        const hcpAdvantage = Math.abs(declarerHCPPercent - 50);
+                        if (declarerHCPPercent > 50) {
+                            const extraReward = Math.min(3, hcpAdvantage / 10);
+                            defenderPoints += extraReward;
+                        }
+                    } else {
+                        // If declarer made or exceeded hand potential, still give base reward
+                        // but slightly more if they held weak cards
+                        const declarerHCPPercent = (declarerHCP / totalHCP) * 100;
+                        if (declarerHCPPercent < 45) {
+                            defenderPoints += 1; // Total 2 points for defending against weak declarer
+                        }
+                    }
+                }
+                
+                // Step 9: Finalize
+                let declarerPoints = Math.max(1, Math.round(points));
+                defenderPoints = Math.round(defenderPoints);
+                
+                if (declarerSide === 'NS') {
+                    nsPoints = declarerPoints;
+                    ewPoints = defenderPoints;
+                } else {
+                    ewPoints = declarerPoints;
+                    nsPoints = defenderPoints;
+                }
+                
+                return { nsPoints, ewPoints };
+            }
+            
+            getExpectedHCP(level, suit) {
+                const isNT = suit === 'NT';
+                const isMajor = (suit === '♥' || suit === '♠');
+                
+                if (level <= 2) return 21; // Part scores
+                if (level === 3) {
+                    if (isNT) return 25;
+                    if (isMajor) return 23;
+                    return 24; // Minor
+                }
+                if (level === 4) {
+                    if (isNT) return 27;
+                    if (isMajor) return 24;
+                    return 26; // Minor
+                }
+                if (level === 5) {
+                    if (isNT) return 29;
+                    if (isMajor) return 28;
+                    return 27; // Minor
+                }
+                if (level === 6) return 30; // Small slam
+                if (level === 7) return 32; // Grand slam
+                return 21;
+            }
+            
+            calculateBonusLiteScore(rawScore) {
+                // SIMPLIFIED VERSION - fewer steps, easier calculations
+                const hcp = this.contract.hcpAnalysis;
+                const level = this.contract.level;
+                const suit = this.contract.suit;
+                const result = this.contract.result;
+                const tricks = this.contract.tricks || 0;
+                const declarer = this.contract.declarer;
+                
+                const declarerHCP = hcp.declarer;
+                const defenderHCP = 40 - declarerHCP;
+                
+                const actualTricks = result === 'down' ? 
+                    (6 + level - tricks) : 
+                    (6 + level + tricks);
+                
+                const isNT = suit === 'NT';
+                const isMajor = (suit === '♥' || suit === '♠');
+                const isGame = (level === 3 && isNT) || (level === 4 && isMajor) || 
+                               (level === 5 && !isMajor && !isNT) || level >= 6;
+                
+                let nsPoints = 0;
+                let ewPoints = 0;
+                const declarerSide = (declarer === 'N' || declarer === 'S') ? 'NS' : 'EW';
+                
+                // DEFEATED CONTRACTS - Simplified with tiered divisors
+                if (rawScore < 0) {
+                    // Determine divisor based on contract type (tiered system)
+                    let divisor;
+                    const absRaw = Math.abs(rawScore);
+                    if (absRaw < 150) divisor = 10;       // Part score penalties
+                    else if (absRaw < 850) divisor = 15;  // Game penalties
+                    else if (absRaw < 1600) divisor = 20; // Small slam penalties
+                    else divisor = 25;                     // Grand slam penalties
+                    
+                    let defenderPoints = absRaw / divisor;
+                    if (isGame) defenderPoints += 5;
+                    if (level >= 6) defenderPoints += 5; // Additional for slam
+                    
+                    defenderPoints = Math.max(5, Math.round(defenderPoints));
+                    
+                    if (declarerSide === 'NS') {
+                        ewPoints = defenderPoints;
+                    } else {
+                        nsPoints = defenderPoints;
+                    }
+                    
+                    return { nsPoints, ewPoints };
+                }
+                
+                // MADE CONTRACTS - Simplified with tiered divisors
+                // Determine divisor based on raw score (contract type)
+                let divisor;
+                if (rawScore < 150) {
+                    divisor = 10;  // Part scores - BOOST value
+                } else if (rawScore < 850) {
+                    divisor = 15;  // Games - STANDARD value
+                } else if (rawScore < 1600) {
+                    divisor = 20;  // Small slams - REDUCE dominance
+                } else {
+                    divisor = 25;  // Grand slams - MAJOR reduction
+                }
+                
+                let points = rawScore / divisor;
+                
+                // Simple HCP adjustment
+                const expectedHCP = this.getExpectedHCP(level, suit);
+                const hcpDiff = declarerHCP - expectedHCP;
+                points -= hcpDiff * 0.5; // Reduced multiplier for simplicity
+                
+                // Bonus for game/slam
+                if (isGame) points += 3;
+                if (level >= 6) points += 5;
+                
+                // Declarer points
+                let declarerPoints = Math.max(2, Math.round(points));
+                
+                // DEFENDERS ALWAYS GET POINTS - Simplified
+                let defenderPoints = 2; // Baseline
+                
+                // Extra if declarer had strong hand
+                if (declarerHCP > 25) defenderPoints += 1;
+                if (declarerHCP > 30) defenderPoints += 1;
+                
+                if (declarerSide === 'NS') {
+                    nsPoints = declarerPoints;
+                    ewPoints = defenderPoints;
+                } else {
+                    ewPoints = declarerPoints;
+                    nsPoints = defenderPoints;
+                }
+                
+                return { nsPoints, ewPoints };
+            }
+            
+            isDeclarerVulnerable(declarer) {
+                if (this.vulnerability === 'NV') return false;
+                if (this.vulnerability === 'Both') return true;
+                const isNS = (declarer === 'N' || declarer === 'S');
+                return (this.vulnerability === 'NS' && isNS) || 
+                       (this.vulnerability === 'EW' && !isNS);
+            }
+            
+            nextDeal() {
+                this.deal++;
+                this.updateDealInfo();
+                this.resetContract();
+                this.screen = 'level';
+                this.updateDisplay();
+            }
+            
+            back() {
+                if (this.screen === 'suit') {
+                    this.contract.level = null;
+                    this.screen = 'level';
+                } else if (this.screen === 'declarer') {
+                    this.contract.suit = null;
+                    this.screen = 'suit';
+                } else if (this.screen === 'result') {
+                    this.contract.declarer = null;
+                    this.contract.doubled = '';
+                    this.screen = 'declarer';
+                } else if (this.screen === 'tricks') {
+                    this.contract.result = null;
+                    this.screen = 'result';
+                } else if (this.screen === 'level') {
+                    this.screen = 'mode_selection';
+                    this.mode = null;
+                    document.getElementById('scores').style.display = 'none';
+                    document.getElementById('dealInfo').style.display = 'none';
+                    document.getElementById('controlButtons').style.display = 'none';
+                }
+                this.updateDisplay();
+            }
+            
+            newGame() {
+                if (confirm('Start a new game? Current scores will be reset.')) {
+                    this.scores = { NS: 0, EW: 0 };
+                    this.deal = 1;
+                    this.history = [];
+                    this.resetContract();
+                    this.updateDealInfo();
+                    this.screen = 'level';
+                    this.updateDisplay();
+                }
+            }
+            
+            showHistory() {
+                if (this.history.length === 0) {
+                    alert('No hands played yet.');
+                    return;
+                }
+                
+                const modeNames = {
+                    'chicago': 'Chicago',
+                    'bonus': 'Bonus',
+                    'bonus-lite': 'Bonus Lite'
+                };
+                
+                // Create a modal/popup for history
+                const historyOverlay = document.createElement('div');
+                historyOverlay.className = 'popup-overlay active';
+                historyOverlay.id = 'historyOverlay';
+                
+                let historyHTML = `
+                    <div class="popup" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                        <h2>${modeNames[this.mode]} Bridge History</h2>
+                        <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 18px; font-weight: bold; color: #495057;">
+                                Current Scores: NS ${this.scores.NS} | EW ${this.scores.EW}
+                            </div>
+                            <div style="font-size: 14px; color: #6c757d; margin-top: 5px;">
+                                Total Deals: ${this.history.length}
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                `;
+                
+                // Show each deal
+                this.history.forEach((deal, index) => {
+                    const dealers = ['North', 'East', 'South', 'West'];
+                    const dealerName = dealers[deal.dealer];
+                    
+                    let detailsHTML = '';
+                    if (this.mode === 'bonus' || this.mode === 'bonus-lite') {
+                        // Show detailed Bonus Bridge info including raw score and HCP
+                        const hcp = deal.contract.hcpAnalysis;
+                        if (hcp) {
+                            const defenderHCP = 40 - hcp.declarer;
+                            const distPoints = hcp.singletons * 2 + hcp.voids * 3 + hcp.longSuits;
+                            
+                            detailsHTML = `
+                                <div style="font-size: 13px; color: #6c757d; margin-top: 8px; line-height: 1.5;">
+                                    Declarer HCP: ${hcp.declarer} | Defender HCP: ${defenderHCP}<br>
+                                    Distribution: ${hcp.singletons} singleton(s), ${hcp.voids} void(s), ${hcp.longSuits} long suit(s) = ${distPoints} pts
+                                </div>
+                                <div style="font-size: 13px; color: #495057; margin-top: 5px; font-weight: bold;">
+                                    Raw Score: ${deal.rawScore > 0 ? '+' : ''}${deal.rawScore}
+                                </div>
+                                <div style="font-size: 14px; color: #28a745; margin-top: 3px; font-weight: bold;">
+                                    ${deal.scoringInfo}
+                                </div>
+                            `;
+                        }
+                    } else {
+                        // Chicago shows simple score
+                        detailsHTML = `
+                            <div style="font-size: 14px; color: #495057; margin-top: 5px;">
+                                ${deal.scoringInfo}
+                            </div>
+                        `;
+                    }
+                    
+                    historyHTML += `
+                        <div style="margin-bottom: 15px; padding: 15px; background: white; border: 2px solid #e9ecef; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: bold; color: #495057; font-size: 16px;">
+                                        Deal ${deal.deal}: ${deal.contractDisplay}
+                                    </div>
+                                    <div style="font-size: 12px; color: #868e96; margin-top: 2px;">
+                                        Dealer: ${dealerName} | ${deal.vulnerability}
+                                    </div>
+                                </div>
+                                <div style="text-align: right; font-size: 14px; font-weight: bold; color: #495057;">
+                                    NS: ${deal.nsScore > 0 ? '+' : ''}${deal.nsScore}<br>
+                                    EW: ${deal.ewScore > 0 ? '+' : ''}${deal.ewScore}
+                                </div>
+                            </div>
+                            ${detailsHTML}
+                        </div>
+                    `;
+                });
+                
+                historyHTML += `
+                        </div>
+                        <div class="popup-buttons">
+                            <button class="popup-btn submit" onclick="app.closeHistory()" style="width: 100%;">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                historyOverlay.innerHTML = historyHTML;
+                document.body.appendChild(historyOverlay);
+            }
+            
+            closeHistory() {
+                const overlay = document.getElementById('historyOverlay');
+                if (overlay) {
+                    overlay.remove();
+                }
+            }
+            
+            showHelp(mode) {
+                const helpContent = document.getElementById('helpContent');
+                const helpTitle = document.getElementById('helpTitle');
+                
+                if (mode === 'chicago') {
+                    helpTitle.textContent = 'Chicago Bridge';
+                    helpContent.innerHTML = `
+                        <h3 style="color: #667eea; margin-top: 0;">Overview</h3>
+                        <p>Chicago Bridge is a popular 4-deal rotation system with automatic vulnerability cycling. Perfect for casual play with predictable break points.</p>
+                        
+                        <h3 style="color: #667eea; margin-top: 20px;">Vulnerability Cycle</h3>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Deal 1:</strong> None Vulnerable (NV)</li>
+                            <li><strong>Deal 2:</strong> North-South Vulnerable (NS)</li>
+                            <li><strong>Deal 3:</strong> East-West Vulnerable (EW)</li>
+                            <li><strong>Deal 4:</strong> Both Vulnerable (Both)</li>
+                        </ul>
+                        <p>The cycle then repeats for deals 5-8, 9-12, etc.</p>
+                        
+                        <h3 style="color: #667eea; margin-top: 20px;">Dealer Rotation</h3>
+                        <p>Dealer rotates clockwise: North → East → South → West → North...</p>
+                        
+                        <h3 style="color: #667eea; margin-top: 20px;">Scoring</h3>
+                        <p>Standard bridge scoring applies. Only the declaring side scores points (positive for making, negative for going down). The side with the highest total at the end wins.</p>
+                        
+                        <h3 style="color: #667eea; margin-top: 20px;">Best For</h3>
+                        <p>Traditional bridge players who want a structured game with natural break points every 4 deals.</p>
+                    `;
+                } else if (mode === 'bonus') {
+                    helpTitle.textContent = 'Bonus Bridge (Full)';
+                    helpContent.innerHTML = `
+                        <h3 style="color: #667eea; margin-top: 0;">Overview</h3>
+                        <p>An innovative scoring system that rewards both declarers AND defenders based on hand strength and performance. Levels the playing field so good play matters more than good cards.</p>
+                        
+                        <h3 style="color: #667eea; margin-top: 20px;">Key Features</h3>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>HCP-Based Expectations:</strong> Contracts are scored relative to expected HCP for that bid level</li>
+                            <li><strong>Distribution Matters:</strong> Voids, singletons, and long suits affect scoring
+                                <ul style="margin-left: 20px; margin-top: 5px;">
+                                    <li><em>Suit contracts:</em> Distribution helps</li>
+                                    <li><em>NT contracts:</em> Voids/singletons hurt</li>
+                                </ul>
+                            </li>
+                            <li><strong>Both Sides Score:</strong> Defenders always earn points, more for good defense</li>
+                            <li><strong>Performance-Based:</strong> Making contracts with fewer points than expected = bonus!</li>
+                        </ul>
+                        
+                        <h3 style="color: #667eea; margin-top: 20px;">Scoring Process</h3>
+                        <p>After each deal, enter declarer's HCP and distribution. The app calculates:</p>
+                        <ol style="margin-left: 20px;">
+                            <li>Raw bridge score (standard)</li>
+                            <li>Adjusted score based on HCP vs expected</li>
+                            <li>Declarer points for making/overtricks</li>
+                            <li>Defender points (baseline + performance bonus)</li>
+                        </ol>
+                        
+                        <h3 style="color: #667eea; margin-top: 20px;">Example</h3>
+                        <p style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 14px;">
+                        4♥ by South with 20 HCP (expected: 24) makes exactly = Higher adjusted score for declarer (made with less), defenders get 1-2 baseline points for good defense.
+                        </p>
+                        
+                        <h3 style="color: #667eea; margin-top: 20px;">Best For</h3>
+                        <p>Serious players who want a sophisticated scoring system that rewards skill over card luck.</p>
+                    `;
+                } else if (mode === 'bonus-lite') {
+                    helpTitle.textContent = 'Bonus Bridge Lite';
+                    helpContent.innerHTML = `
+                        <h3 style="color: #f5576c; margin-top: 0;">Overview</h3>
+                        <p>A simplified version of Bonus Bridge with easier calculations. Great for learning the system or casual play.</p>
+                        
+                        <h3 style="color: #f5576c; margin-top: 20px;">Simplifications</h3>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Fewer Steps:</strong> No hand potential calculations</li>
+                            <li><strong>Easier Math:</strong> Reduced multipliers and simpler adjustments</li>
+                            <li><strong>No Distribution Penalties:</strong> Only HCP matters for scoring</li>
+                            <li><strong>Fixed Defender Points:</strong> Always 2-4 points based on declarer HCP</li>
+                        </ul>
+                        
+                        <h3 style="color: #f5576c; margin-top: 20px;">How It Works</h3>
+                        <p>Still requires HCP counting but calculations are streamlined:</p>
+                        <ul style="margin-left: 20px;">
+                            <li>Raw score ÷ 15</li>
+                            <li>Simple HCP adjustment (0.5× multiplier)</li>
+                            <li>Defenders get 2-4 points automatically</li>
+                            <li>Bonuses for games and slams</li>
+                        </ul>
+                        
+                        <h3 style="color: #f5576c; margin-top: 20px;">Defender Rewards</h3>
+                        <p style="background: #fff5f5; padding: 10px; border-radius: 5px; font-size: 14px;">
+                        <strong>Baseline:</strong> 2 points<br>
+                        <strong>+1 point</strong> if declarer had >25 HCP<br>
+                        <strong>+1 more</strong> if declarer had >30 HCP
+                        </p>
+                        
+                        <h3 style="color: #f5576c; margin-top: 20px;">Best For</h3>
+                        <p>Beginners learning the Bonus Bridge concept, or experienced players who want faster games without complex calculations.</p>
+                        
+                        <h3 style="color: #f5576c; margin-top: 20px;">Pro Tip</h3>
+                        <p style="font-style: italic; color: #6c757d;">Try Lite mode first to understand the philosophy, then graduate to full Bonus Bridge for deeper strategy!</p>
+                    `;
+                }
+                
+                document.getElementById('helpPopup').classList.add('active');
+            }
+            
+            closeHelp() {
+                document.getElementById('helpPopup').classList.remove('active');
+            }
+            
+            async toggleWakeLock() {
+                const btn = document.getElementById('wakeBtn');
+                
+                if (!this.wakeLockSupported) {
+                    alert('Wake Lock not supported on this device/browser. Try Chrome or Edge on Android, or Safari on iOS 16.4+');
+                    return;
+                }
+                
+                try {
+                    if (this.wakeLock !== null) {
+                        // Release wake lock
+                        await this.wakeLock.release();
+                        this.wakeLock = null;
+                        btn.textContent = 'Wake 🔒';
+                        btn.classList.remove('active');
+                    } else {
+                        // Request wake lock
+                        this.wakeLock = await navigator.wakeLock.request('screen');
+                        btn.textContent = 'Awake ✓';
+                        btn.classList.add('active');
+                        
+                        // Handle wake lock release (e.g., when tab loses focus)
+                        this.wakeLock.addEventListener('release', () => {
+                            console.log('Wake Lock released');
+                            this.wakeLock = null;
+                            btn.textContent = 'Wake 🔒';
+                            btn.classList.remove('active');
+                        });
+                    }
+                } catch (err) {
+                    console.error('Wake Lock error:', err);
+                    alert(`Could not activate Wake Lock: ${err.message}`);
+                }
+            }
+        }
+        
+        // Initialize app
+        const app = new BridgeModesApp();
+    </script>
+</body>
+</html>
