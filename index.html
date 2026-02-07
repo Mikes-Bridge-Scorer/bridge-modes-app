@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Bridge Modes Calculator - Chicago Bridge, Bonus Bridge, and Bonus Bridge Lite scoring calculator. Works offline!">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Bridge Modes">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -234,8 +235,10 @@
             background: rgba(0, 0, 0, 0.7);
             z-index: 1000;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .popup-overlay.active {
@@ -248,8 +251,10 @@
             padding: 30px;
             max-width: 400px;
             width: 100%;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
+            margin: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .popup h2 {
@@ -271,10 +276,17 @@
         
         .popup-field input {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             border: 2px solid #e9ecef;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 18px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .popup-field input:focus {
+            outline: none;
+            border-color: #667eea;
         }
         
         .popup-buttons {
@@ -353,20 +365,20 @@
             <h2>HCP Analysis</h2>
             <div class="popup-field">
                 <label>Declarer's HCP (0-37):</label>
-                <input type="number" id="hcpDeclarer" min="0" max="37" value="20">
+                <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpDeclarer" min="0" max="37" value="20">
             </div>
             <div id="distributionFields">
                 <div class="popup-field">
                     <label>Singletons (0-4):</label>
-                    <input type="number" id="hcpSingletons" min="0" max="4" value="0">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpSingletons" min="0" max="4" value="0">
                 </div>
                 <div class="popup-field">
                     <label>Voids (0-4):</label>
-                    <input type="number" id="hcpVoids" min="0" max="4" value="0">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpVoids" min="0" max="4" value="0">
                 </div>
                 <div class="popup-field">
                     <label>Long suits 6+ cards (0-4):</label>
-                    <input type="number" id="hcpLongSuits" min="0" max="4" value="0">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLongSuits" min="0" max="4" value="0">
                 </div>
                 <div style="font-size: 12px; color: #6c757d; margin-top: -10px; font-style: italic;">
                     Distribution helps suit contracts but hurts NT contracts
@@ -375,6 +387,33 @@
             <div class="popup-buttons">
                 <button class="popup-btn cancel" onclick="app.cancelHCPAnalysis()">Cancel</button>
                 <button class="popup-btn submit" onclick="app.submitHCPAnalysis()">Calculate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HCP Analysis Popup for Bonus Bridge LITE -->
+    <div id="hcpLitePopup" class="popup-overlay">
+        <div class="popup">
+            <h2>Bonus Bridge Lite</h2>
+            <div style="font-size: 14px; color: #6c757d; margin-bottom: 20px;">
+                Simplified scoring - just HCP and trump length
+            </div>
+            <div class="popup-field">
+                <label>Declarer's HCP (0-37):</label>
+                <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLiteDeclarer" min="0" max="37" value="20">
+            </div>
+            <div id="trumpFields">
+                <div class="popup-field">
+                    <label>Trump length (0-13):</label>
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="hcpLiteTrumps" min="0" max="13" value="8">
+                    <div style="font-size: 12px; color: #6c757d; margin-top: 5px; font-style: italic;">
+                        For NT contracts, enter 0
+                    </div>
+                </div>
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn cancel" onclick="app.cancelHCPLiteAnalysis()">Cancel</button>
+                <button class="popup-btn submit" onclick="app.submitHCPLiteAnalysis()">Calculate</button>
             </div>
         </div>
     </div>
@@ -753,9 +792,12 @@
             }
             
             calculateScore() {
-                if (this.mode === 'bonus' || this.mode === 'bonus-lite') {
-                    // For Bonus Bridge modes, show HCP popup first
+                if (this.mode === 'bonus') {
+                    // For Bonus Bridge Full, show full HCP popup
                     this.showHCPPopup();
+                } else if (this.mode === 'bonus-lite') {
+                    // For Bonus Bridge Lite, show simplified popup
+                    this.showHCPLitePopup();
                 } else {
                     // For Chicago, calculate directly
                     this.finishScoring();
@@ -780,11 +822,40 @@
                 }
                 
                 document.getElementById('hcpPopup').classList.add('active');
-                document.getElementById('hcpDeclarer').focus();
+                
+                // Scroll popup to top and focus first field
+                setTimeout(() => {
+                    const popup = document.querySelector('#hcpPopup .popup');
+                    if (popup) popup.scrollTop = 0;
+                    document.getElementById('hcpDeclarer').focus();
+                }, 100);
+            }
+            
+            showHCPLitePopup() {
+                // Reset fields to defaults
+                document.getElementById('hcpLiteDeclarer').value = 20;
+                document.getElementById('hcpLiteTrumps').value = 8;
+                
+                document.getElementById('hcpLitePopup').classList.add('active');
+                
+                // Scroll popup to top and focus first field
+                setTimeout(() => {
+                    const popup = document.querySelector('#hcpLitePopup .popup');
+                    if (popup) popup.scrollTop = 0;
+                    document.getElementById('hcpLiteDeclarer').focus();
+                }, 100);
             }
             
             cancelHCPAnalysis() {
                 document.getElementById('hcpPopup').classList.remove('active');
+                this.screen = 'result';
+                this.contract.result = null;
+                this.contract.tricks = null;
+                this.updateDisplay();
+            }
+            
+            cancelHCPLiteAnalysis() {
+                document.getElementById('hcpLitePopup').classList.remove('active');
                 this.screen = 'result';
                 this.contract.result = null;
                 this.contract.tricks = null;
@@ -807,6 +878,24 @@
                     singletons,
                     voids,
                     longSuits
+                };
+                
+                this.finishScoring();
+            }
+            
+            submitHCPLiteAnalysis() {
+                const declarer = parseInt(document.getElementById('hcpLiteDeclarer').value) || 20;
+                const trumps = parseInt(document.getElementById('hcpLiteTrumps').value) || 0;
+                
+                document.getElementById('hcpLitePopup').classList.remove('active');
+                
+                // For Lite, we store trump length instead of detailed distribution
+                this.contract.hcpAnalysis = {
+                    declarer,
+                    trumpLength: trumps,
+                    singletons: 0,
+                    voids: 0,
+                    longSuits: 0
                 };
                 
                 this.finishScoring();
@@ -1175,7 +1264,7 @@
             }
             
             calculateBonusLiteScore(rawScore) {
-                // SIMPLIFIED VERSION - fewer steps, easier calculations
+                // SIMPLIFIED VERSION - HCP + Trump length only
                 const hcp = this.contract.hcpAnalysis;
                 const level = this.contract.level;
                 const suit = this.contract.suit;
@@ -1184,6 +1273,7 @@
                 const declarer = this.contract.declarer;
                 
                 const declarerHCP = hcp.declarer;
+                const trumpLength = hcp.trumpLength || 0;
                 const defenderHCP = 40 - declarerHCP;
                 
                 const actualTricks = result === 'down' ? 
@@ -1243,6 +1333,16 @@
                 const expectedHCP = this.getExpectedHCP(level, suit);
                 const hcpDiff = declarerHCP - expectedHCP;
                 points -= hcpDiff * 0.5; // Reduced multiplier for simplicity
+                
+                // Trump length adjustment (for suit contracts only)
+                if (!isNT && trumpLength > 0) {
+                    if (trumpLength >= 8) {
+                        points += 2; // Good trump fit
+                    } else if (trumpLength <= 5) {
+                        points -= 2; // Poor trump fit
+                    }
+                    // 6-7 trumps = no adjustment (normal)
+                }
                 
                 // Bonus for game/slam
                 if (isGame) points += 3;
@@ -1363,13 +1463,29 @@
                         const hcp = deal.contract.hcpAnalysis;
                         if (hcp) {
                             const defenderHCP = 40 - hcp.declarer;
-                            const distPoints = hcp.singletons * 2 + hcp.voids * 3 + hcp.longSuits;
+                            
+                            let analysisText = '';
+                            if (this.mode === 'bonus-lite' && hcp.trumpLength !== undefined) {
+                                // Lite version - show trump length
+                                analysisText = `
+                                    <div style="font-size: 13px; color: #6c757d; margin-top: 8px; line-height: 1.5;">
+                                        Declarer HCP: ${hcp.declarer} | Defender HCP: ${defenderHCP}<br>
+                                        Trump length: ${hcp.trumpLength} cards
+                                    </div>
+                                `;
+                            } else {
+                                // Full version - show distribution
+                                const distPoints = hcp.singletons * 2 + hcp.voids * 3 + hcp.longSuits;
+                                analysisText = `
+                                    <div style="font-size: 13px; color: #6c757d; margin-top: 8px; line-height: 1.5;">
+                                        Declarer HCP: ${hcp.declarer} | Defender HCP: ${defenderHCP}<br>
+                                        Distribution: ${hcp.singletons} singleton(s), ${hcp.voids} void(s), ${hcp.longSuits} long suit(s) = ${distPoints} pts
+                                    </div>
+                                `;
+                            }
                             
                             detailsHTML = `
-                                <div style="font-size: 13px; color: #6c757d; margin-top: 8px; line-height: 1.5;">
-                                    Declarer HCP: ${hcp.declarer} | Defender HCP: ${defenderHCP}<br>
-                                    Distribution: ${hcp.singletons} singleton(s), ${hcp.voids} void(s), ${hcp.longSuits} long suit(s) = ${distPoints} pts
-                                </div>
+                                ${analysisText}
                                 <div style="font-size: 13px; color: #495057; margin-top: 5px; font-weight: bold;">
                                     Raw Score: ${deal.rawScore > 0 ? '+' : ''}${deal.rawScore}
                                 </div>
