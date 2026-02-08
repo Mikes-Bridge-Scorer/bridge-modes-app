@@ -1398,13 +1398,25 @@
                 points -= hcpDiff * 0.5; // Reduced multiplier for simplicity
                 
                 // Trump length adjustment (for suit contracts only)
+                // CORRECTED: More trumps = easier = FEWER points
                 if (!isNT && trumpLength > 0) {
-                    if (trumpLength >= 8) {
-                        points += 2; // Good trump fit
-                    } else if (trumpLength <= 5) {
-                        points -= 2; // Poor trump fit
+                    // Combined strength calculation
+                    const totalStrength = declarerHCP + trumpLength;
+                    
+                    // Penalty for having strong combined resources
+                    if (totalStrength >= 30) {
+                        points -= 3; // Very strong hand (e.g., 22 HCP + 8 trumps)
+                    } else if (totalStrength >= 28) {
+                        points -= 2; // Strong hand
+                    } else if (totalStrength >= 26) {
+                        points -= 1; // Good hand
                     }
-                    // 6-7 trumps = no adjustment (normal)
+                    // 25 or less = no adjustment (made it with limited resources)
+                    
+                    // Bonus for making with few trumps (hard to play)
+                    if (trumpLength <= 6) {
+                        points += 2; // Difficult trump fit
+                    }
                 }
                 
                 // Bonus for game/slam
@@ -1414,12 +1426,17 @@
                 // Declarer points
                 let declarerPoints = Math.max(2, Math.round(points));
                 
-                // DEFENDERS ALWAYS GET POINTS - Simplified
+                // DEFENDERS - Inversely related to declarer strength
+                const declarerHCPPercent = (declarerHCP / totalHCP) * 100;
                 let defenderPoints = 2; // Baseline
                 
-                // Extra if declarer had strong hand
-                if (declarerHCP > 25) defenderPoints += 1;
-                if (declarerHCP > 30) defenderPoints += 1;
+                // Less points if declarer was weak (good play by declarer)
+                if (declarerHCPPercent <= 45) {
+                    defenderPoints = 1;
+                } else if (declarerHCPPercent >= 60) {
+                    // More points if declarer was strong
+                    defenderPoints = 3;
+                }
                 
                 if (declarerSide === 'NS') {
                     nsPoints = declarerPoints;
