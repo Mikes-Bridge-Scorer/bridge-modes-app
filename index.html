@@ -1255,31 +1255,33 @@
                     else if (absDistPoints >= 7) points -= 3;
                 }
                 
-                // Step 8: Defender Reward - IMPROVED WITH BASELINE
+                // Step 8: Defender Reward - BALANCED
                 let defenderPoints = 0;
                 const contractMade = actualTricks >= contractExpectedTricks;
                 
                 if (contractMade) {
-                    // BASELINE REWARD: Always give defenders 1-2 points for made contracts
-                    defenderPoints = 1;
+                    const declarerHCPPercent = (declarerHCP / totalHCP) * 100;
+                    
+                    // BASELINE REWARD: Varies by declarer strength
+                    if (declarerHCPPercent >= 55) {
+                        // Declarer had strong cards - defenders get normal baseline
+                        defenderPoints = 2;
+                    } else if (declarerHCPPercent <= 45) {
+                        // Declarer had weak cards and STILL made it - defenders get minimal
+                        defenderPoints = 1;
+                    } else {
+                        // Balanced hands - normal baseline
+                        defenderPoints = 1.5;
+                    }
                     
                     // Additional reward if declarer underperformed hand potential
                     if (handExpectedTricks > contractExpectedTricks && actualTricks < handExpectedTricks) {
-                        defenderPoints += (handExpectedTricks - actualTricks) * 2;
+                        const underPerformance = handExpectedTricks - actualTricks;
+                        defenderPoints += underPerformance * 1.5;  // Reduced from 2.0
                         
-                        // Extra reward for defending at disadvantage
-                        const declarerHCPPercent = (declarerHCP / totalHCP) * 100;
-                        const hcpAdvantage = Math.abs(declarerHCPPercent - 50);
-                        if (declarerHCPPercent > 50) {
-                            const extraReward = Math.min(3, hcpAdvantage / 10);
-                            defenderPoints += extraReward;
-                        }
-                    } else {
-                        // If declarer made or exceeded hand potential, still give base reward
-                        // but slightly more if they held weak cards
-                        const declarerHCPPercent = (declarerHCP / totalHCP) * 100;
-                        if (declarerHCPPercent < 45) {
-                            defenderPoints += 1; // Total 2 points for defending against weak declarer
+                        // Extra small reward for defending against strong declarer
+                        if (declarerHCPPercent > 55) {
+                            defenderPoints += 1;
                         }
                     }
                 }
