@@ -1338,6 +1338,7 @@
                 const declarerHCP = hcp.declarer;
                 const trumpLength = hcp.trumpLength || 0;
                 const defenderHCP = 40 - declarerHCP;
+                const totalHCP = 40;  // FIXED: Added missing variable
                 
                 const actualTricks = result === 'down' ? 
                     (6 + level - tricks) : 
@@ -1397,25 +1398,19 @@
                 const hcpDiff = declarerHCP - expectedHCP;
                 points -= hcpDiff * 0.5; // Reduced multiplier for simplicity
                 
-                // Trump length adjustment (for suit contracts only)
-                // CORRECTED: More trumps = easier = FEWER points
+                // REFINED Trump/Strength adjustment (for suit contracts only)
+                // Linear penalty: Every point of combined strength above baseline = -0.5
                 if (!isNT && trumpLength > 0) {
-                    // Combined strength calculation
                     const totalStrength = declarerHCP + trumpLength;
+                    const baseline = 25; // Minimum expected for 3-level contracts
                     
-                    // Penalty for having strong combined resources
-                    if (totalStrength >= 30) {
-                        points -= 3; // Very strong hand (e.g., 22 HCP + 8 trumps)
-                    } else if (totalStrength >= 28) {
-                        points -= 2; // Strong hand
-                    } else if (totalStrength >= 26) {
-                        points -= 1; // Good hand
-                    }
-                    // 25 or less = no adjustment (made it with limited resources)
+                    // Linear penalty for excessive strength
+                    const strengthPenalty = Math.max(0, (totalStrength - baseline) * 0.5);
+                    points -= strengthPenalty;
                     
-                    // Bonus for making with few trumps (hard to play)
+                    // Bonus for poor trump fit (hard to play)
                     if (trumpLength <= 6) {
-                        points += 2; // Difficult trump fit
+                        points += 2;
                     }
                 }
                 
